@@ -16,7 +16,7 @@ def connect_sheet():
         "https://www.googleapis.com/auth/spreadsheets",
         "https://www.googleapis.com/auth/drive"
     ]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_name("identifiants.json", scope)
     client = gspread.authorize(creds)
     sheet = client.open("Partenaires Billets").sheet1
     return sheet
