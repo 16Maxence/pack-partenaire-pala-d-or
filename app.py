@@ -1,7 +1,5 @@
 import streamlit as st
-import pandas as pd
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
+from mailjet_rest import Client
 
 # ---------------------------------------------------------
 # CONFIG STREAMLIT
@@ -9,26 +7,31 @@ from oauth2client.service_account import ServiceAccountCredentials
 st.set_page_config(page_title="Partenaires Billetterie", layout="centered")
 
 # ---------------------------------------------------------
-# GOOGLE SHEETS – Connexion
+# CONFIG MAILJET (via Secrets Streamlit)
 # ---------------------------------------------------------
-def connect_sheet():
-    scope = [
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive"
-    ]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("identifiants.json", scope)
-    client = gspread.authorize(creds)
-    sheet = client.open("Partenaires Billets").sheet1
-    return sheet
+MAILJET_API_KEY = st.secrets["MAILJET_API_KEY"]
+MAILJET_SECRET_KEY = st.secrets["MAILJET_SECRET_KEY"]
 
-def save_to_google_sheets(data):
-    sheet = connect_sheet()
-    sheet.append_row(list(data.values()))
+mailjet = Client(auth=(MAILJET_API_KEY, MAILJET_SECRET_KEY), version='v3.1')
 
-def load_google_sheet():
-    sheet = connect_sheet()
-    data = sheet.get_all_records()
-    return pd.DataFrame(data)
+EMAIL_RECEIVERS = [
+    "crmt.maxence@gmail.com",
+    "dannecolpala@gmail.com"
+]
+
+def send_email(body):
+    data = {
+        'Messages': [
+            {
+                "From": {"Email": "crmt.maxence@gmail.com"},
+                "To": [{"Email": email} for email in EMAIL_RECEIVERS],
+                "Subject": "Nouvelle réponse partenaire",
+                "TextPart": body
+            }
+        ]
+    }
+    result = mailjet.send.create(data=data)
+    return result.status_code == 200
 
 # ---------------------------------------------------------
 # DONNÉES PACKS & ÉVÉNEMENTS
@@ -59,15 +62,11 @@ is_admin = query_params.get("admin", [""])[0] == "palamaxdandor"
 # PAGE ADMIN
 # ---------------------------------------------------------
 if is_admin:
-    st.title("🔐 Administration – Liste des réponses")
-
-    try:
-        df = load_google_sheet()
-        st.dataframe(df)
-    except Exception as e:
-        st.error("Impossible de charger les données Google Sheets.")
-        st.code(str(e))
-
+    st.title("🔐 Administration – Historique des réponses")
+    st.info("Les réponses sont envoyées par email via Mailjet.")
+    st.write("Destinataires :")
+    st.write("- crmt.maxence@gmail.com")
+    st.write("- dannecolpala@gmail.com")
     st.stop()
 
 # ---------------------------------------------------------
@@ -112,14 +111,19 @@ if st.button("Envoyer le formulaire"):
     elif total != max_billets:
         st.warning(f"Vous devez sélectionner exactement **{max_billets} billets** (actuellement {total}).")
     else:
-        try:
-            save_to_google_sheets({
-                "nom": nom,
-                "pack": pack,
-                "max_billets": max_billets,
-                **billets_selection
-            })
-            st.success("Formulaire envoyé avec succès ! Merci.")
-        except Exception as e:
-            st.error("Erreur lors de l'enregistrement dans Google Sheets.")
-            st.code(str(e))
+        # Construire l'email
+        email_body = f"""
+Nouvelle réponse partenaire :
+
+Nom du partenaire : {nom}
+Pack choisi : {pack}
+Nombre de billets : {max_billets}
+
+Répartition :
+{chr(10).join([f"- {event} : {qte}" for event, qte in billets_selection.items()])}
+"""
+
+        if send_email(email_body):
+            st.success("Formulaire envoyé avec succès ! Les informations ont été envoyées par email.")
+        else:
+            st.error("Erreur lors de l'envoi de l'email.")
