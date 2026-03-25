@@ -124,6 +124,6 @@ Répartition :
 """
 
         if send_email(email_body):
-            st.success("Formulaire envoyé avec succès ! Les informations ont été envoyées par email.")
+            st.success("Formulaire envoyé avec succès !")
         else:
             st.error("Erreur lors de l'envoi de l'email.")
