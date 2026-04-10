@@ -37,11 +37,11 @@ def send_email(body):
 # DONNÉES PACKS & ÉVÉNEMENTS
 # ---------------------------------------------------------
 PACKS = {
-    "Partenaire Simple (250€)": 3,
-    "Partenaire Fer (500€)": 5,
-    "Partenaire Bronze (1000€)": 10,
-    "Partenaire Argent (2500€)": 20,
-    "Partenaire Or (5000€)": 40,
+    "Partenaire Simple (300€)": 3,
+    "Partenaire Fer (600€)": 5,
+    "Partenaire Bronze (1200€)": 10,
+    "Partenaire Argent (3000€)": 20,
+    "Partenaire Or (6000€)": 40,
 }
 
 EVENTS = [
