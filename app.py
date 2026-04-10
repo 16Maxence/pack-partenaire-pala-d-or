@@ -16,7 +16,7 @@ mailjet = Client(auth=(MAILJET_API_KEY, MAILJET_SECRET_KEY), version='v3.1')
 
 EMAIL_RECEIVERS = [
     "crmt.maxence@gmail.com",
-    "dannecolpala@gmail.com"
+    "lapalador2022@gmail.com"
 ]
 
 def send_email(body):
@@ -66,7 +66,7 @@ if is_admin:
     st.info("Les réponses sont envoyées par email via Mailjet.")
     st.write("Destinataires :")
     st.write("- crmt.maxence@gmail.com")
-    st.write("- dannecolpala@gmail.com")
+    st.write("- lapalador2022@gmail.com")
     st.stop()
 
 # ---------------------------------------------------------
