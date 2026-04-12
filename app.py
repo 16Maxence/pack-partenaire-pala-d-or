@@ -45,11 +45,11 @@ PACKS = {
 }
 
 EVENTS = [
-    "7 Mai – St Geours de Maremne",
-    "5 Juin – Hossegor",
-    "17 Juillet – Bayonne",
-    "7 Août – Seignosse",
-    "4 Septembre – Biarritz",
+    "7 Mai – St Geours de Maremne - 19H",
+    "5 Juin – Hossegor - 19H30",
+    "17 Juillet – Bayonne - 11H",
+    "7 Août – Seignosse - 19H",
+    "4 Septembre – Biarritz - 19H",
 ]
 
 # ---------------------------------------------------------
